@@ -2,8 +2,11 @@ from panda3d.core import *
 from direct.showbase.ShowBase import ShowBase
 import sys
 from direct.gui.OnscreenImage import OnscreenImage 
+from direct.gui.OnscreenText import OnscreenText   
+
 class player():
 	def __init__(self):
+
 		self.picker = CollisionTraverser()
 		self.picker.showCollisions(render)
 		self.pq = CollisionHandlerQueue() 
@@ -11,45 +14,41 @@ class player():
 		self.pickerNode = CollisionNode('mouseRay')
 		self.pickerNP = camera.attachNewNode(self.pickerNode)
 
-		#self.pickerNode.setFromCollideMask(BitMask32.bit(1))
 
 
 		self.pickerRay = CollisionRay()
 		self.pickerNode.addSolid(self.pickerRay)
 		self.picker.addCollider(self.pickerNP,self.pq)
 
-		#self.f = Figure()
-		self.Return = ''
+		self.l = []
 		self.step = 1
-		self.list = []
-		self.list1 = []
-		
-		self.player = 0
+		self.set= 1
+		self.player = 'white'
+		self.text =OnscreenText(text = 'player - '+self.player, parent=base.a2dTopLeft, scale=0.06,
+                        pos=(0.05,-0.07,0), fg=(1, 1, 1, 1),
+                        shadow=(0, 0, 0, 0.5), align=TextNode.ALeft) 
+
 	def addFigure(self):
-		if base.mouseWatcherNode.hasMouse():
-			#x1,y1 = self.getSize()
-			# get the mouse position
+		if base.mouseWatcherNode.hasMouse() and self.set == 1:
+
 			mpos = base.mouseWatcherNode.getMouse()
 			mw =  base.mouseWatcherNode.getMouse()
         
-
-			# get the window manager's idea of the mouse position
 			x, y = mw.getX(), mw.getY()
-			# set the position of the ray based on the mouse position
+
 			self.pickerRay.setFromLens(base.camNode,mpos.getX(),mpos.getY())
-			#self.pickerNP.setHpr(mx,my,0)
+
 			self.picker.traverse(render)
-			print(self.pq.getNumEntries())
+
 			if self.pq.getNumEntries() > 0 :
 					self.pq.sortEntries()
 					pickedObj = self.pq.getEntry(0).getIntoNodePath()
-                	#if pickedObj.getZ() != 1:
 
-					xp,yp,zp = self.pq.getEntry(0).getIntoNodePath().getPos()
-					x,y,z =self.pq.getEntry(0).getSurfaceNormal(render)
-					#xp,yp,zp =  pickedObj.getPos()
-					print(pickedObj.getName())
-					if pickedObj.getName()=='black' and pickedObj.getName()!='blackF' and yp > 4 and len(self.list) < 12:
+					x,y,z = self.pq.getEntry(0).getIntoNodePath().getPos()
+					################ Если чёрный ################
+					if pickedObj.getName()=='black' and pickedObj.getName()!='blackF' and pickedObj.getName() != 'whiteF' and y > 4:
+							
+							x,y,z = self.pq.getEntry(0).getIntoNodePath().getPos()
 							cs = CollisionBox(0.5, 0.5, 0.5, 0.5)
 							pcn1 = render.attachNewNode(CollisionNode('blackF'))
 							pcn1.node().addSolid(cs)
@@ -59,14 +58,14 @@ class player():
 							g.setName('blackF')
 							g.setScale(1,1,1)
 
-							tex = loader.loadTexture("black1.png")
+							tex = loader.loadTexture("figures/blackF.png")
 							pcn1.setTexture(tex, 1) 
 							g.copyTo(pcn1)
-							pcn1.setPos(int(xp),int(yp),int(1))
-							self.list.append(pcn1)
-							#self.camera.lookAt(g)
-							#self.camera.setPos(xp,yp,20)
-					elif pickedObj.getName() == 'black' and pickedObj.getName() != 'whiteF' and yp < 3 and len(self.list1) < 12:
+							pcn1.setPos(int(x),int(y),int(1))
+
+					################ Если белый ################
+					elif pickedObj.getName() == 'black' and pickedObj.getName() != 'whiteF' and pickedObj.getName() != 'blackF' and y <3:
+							x,y,z = self.pq.getEntry(0).getIntoNodePath().getPos()
 							cs = CollisionBox(0.5, 0.5, 0.5, 0.5)
 							pcn1 = render.attachNewNode(CollisionNode('whiteF'))
 							pcn1.node().addSolid(cs)
@@ -75,97 +74,133 @@ class player():
 							g=loader.loadModel('models/box')
 							g.setName('whiteF')
 							g.setScale(1,1,1)
-							
 
-							print(g)
-							tex = loader.loadTexture("wh.png")
+							tex = loader.loadTexture("figures/whiteF.png")
 							pcn1.setTexture(tex, 1) 
 							g.copyTo(pcn1)
-							pcn1.setPos(int(xp),int(yp),int(1))
-							self.list1.append(pcn1)   
-	def movement(self):
-		if base.mouseWatcherNode.hasMouse():
-			#x1,y1 = self.getSize()
-			# get the mouse position
-			mpos = base.mouseWatcherNode.getMouse()
-			#mw =  base.mouseWatcherNode.getMouse()
-        
+							pcn1.setPos(int(x),int(y),int(1))
 
-			# get the window manager's idea of the mouse position
-			#x, y = mw.getX(), mw.getY()
-			# set the position of the ray based on the mouse position
+
+
+	def movement(self):
+
+		if base.mouseWatcherNode.hasMouse():
+
+			mpos = base.mouseWatcherNode.getMouse()
+
 			self.pickerRay.setFromLens(base.camNode,mpos.getX(),mpos.getY())
-			#self.pickerNP.setHpr(mx,my,0)
+
 			self.picker.traverse(render)
-			#print(self.pq.getNumEntries())
+			
 			if self.pq.getNumEntries() > 0:
 					self.pq.sortEntries()
 					pickedObj = self.pq.getEntry(0).getIntoNodePath()
-					print(pickedObj.getPos())
-			    
 
-					if self.step == 1 and pickedObj.getZ() != 0:
+					################ 1 клик ################
+					if self.step == 1 and pickedObj.getZ() != 0: # если не кусок карты, а фигура
 						pickedObj = self.pq.getEntry(0).getIntoNodePath()
-						#print(pickedObj.getPos())
-						if str(pickedObj):
-                            
-                            #self.pq.sortEntries()
-							pickedObj = self.pq.getEntry(0).getIntoNodePath()
-							self.x,self.y,self.z = pickedObj.getPos()
-							#xp,yp,zp = self.pq.getEntry(0).getIntoNodePath().getParent().getPos()
-							#x,y,z =self.pq.getEntry(0).getSurfaceNormal(render)
-							self.Np = pickedObj
-                            #pickedObj.remove()
-                           
-							self.figure = pickedObj.getName()
+
+						pickedObj = self.pq.getEntry(0).getIntoNodePath()
+						self.x,self.y,self.z = pickedObj.getPos()
+						self.Np = pickedObj
+
+						self.figure = pickedObj.getName()
 						self.step = 2
-					elif self.pq.getNumEntries() > 0 and self.step == 2:
-                        #self.pq.sortEntries()
-						x,y,z = self.pq.getEntry(0).getIntoNodePath().getPos()
-                        #print(self.pq.getEntry(0).getIntoNodePath().getName() != 'whiteF' and self.pq.getEntry(0).getIntoNodePath().getName() != 'blackF' )
-						if self.pq.getEntry(0).getIntoNodePath().getName() != 'whiteF' and self.pq.getEntry(0).getIntoNodePath().getName() != 'blackF' and self.pq.getEntry(0).getIntoNodePath().getName() != 'white':
-							print('gfd')
-							if y > self.y and y < self.y+2 and self.figure == 'whiteF' and self.player == 0:
-                            #print('hjkl')
-								self.Np.setPos(int(x),int(y),1)
-								self.player = 1
-							elif y < self.y and y > self.y-2 and self.figure == 'blackF' and self.player == 1:
-                            #print('hjkl')
-								self.Np.setPos(int(x),int(y),1)
-								self.player = 0
-						self.step = 1
-						if self.pq.getEntry(0).getIntoNodePath().getName() == 'whiteF' or self.pq.getEntry(0).getIntoNodePath().getName() == 'blackF':
+					################ 2 клик ################
+					elif self.step == 2:
 
-							if y < self.y+2 and self.figure == 'whiteF' and self.player == 0:
-								
-									#print(self.list[i].getPos() , (int(x+(x-self.Np.getX())),int(y+1),1))
-									#if self.list[i].getPos() != (int(x+(x-self.Np.getX())),int(y+1),1):
-									for i in range(len(self.list)):
+                        
+						if self.pq.getEntry(0).getIntoNodePath().getZ() != 0:
+
+
+							x,y,z = self.pq.getEntry(0).getIntoNodePath().getPos()
+							if y > self.y and y < self.y+2 and self.figure == 'whiteF' and self.player == 'white': # если кликнули на белую фишку
+                            
+								self.Np.setPos(int(x),int(y),1)
+
+								self.player = 'black'
+								if self.Np.getY() > 6:
+									self.Np.setName('kingW')
+
+									tex = loader.loadTexture("figures/white_king.png")
+									self.Np.setTexture(tex, 1) 
+							elif y < self.y and y > self.y-2 and self.figure == 'blackF' and self.player == 'black':# если кликнули на чёрную фишку
+                            	
+
+								self.Np.setPos(int(x),int(y),1)
+
+								self.player = 'white'
+								if self.Np.getY() <1:
+									self.Np.setName('kingB')
+
+									tex = loader.loadTexture("figures/black_king.png")
+									self.Np.setTexture(tex, 1) 
+							
+
+							self.step = 1
+
+
+########################### Eat figures ###########################
+						if self.pq.getEntry(0).getIntoNodePath().getName() != 'white' and self.pq.getEntry(0).getIntoNodePath().getName() != 'black':
+							x,y,z = self.pq.getEntry(0).getIntoNodePath().getPos()
+							if y < self.y + 2 and y > self.y-2 and self.figure != self.pq.getEntry(0).getIntoNodePath().getName(): # если не фигура одного цвета
+								if self.figure == 'whiteF' and self.player == 'white' and (self.x,self.y) != (x,y):# если кликнули на белую фишку
+													if self.Np.getY() > 6:
+														self.Np.setName('kingW')
+
+														tex = loader.loadTexture("figures/white_king.png")
+														self.Np.setTexture(tex, 1) 
+
+													g=loader.loadModel('models/box')
+							
+													g.setScale(1,1,1)
+													g.setPos(int(x+(x-self.Np.getX())),int(y+1),1)
+													g.setName('GGGGGGGG')
+
+													for i in render.findAllMatches("blackF"):
+														self.l.append(i.getPos())
+
+													if str(self.l).find(str(g.getPos())) < 0 and int(g.getY()) != 8 and int(g.getY()) != -1 and  int(g.getX()) != 8 and int(g.getX())!= -1: # если впереди, куда я хожу нет фишки
+			
+														self.Np.setPos(int(x+(x-self.Np.getX())),int(y+(y-self.Np.getY())),1)
+														self.pq.getEntry(0).getIntoNodePath().remove()
+						
+														g.remove()
+														#break
 											
-											if self.list[i].getPos() == (int(x+(x-self.Np.getX())*2),int(y+1*2),1):
-												print(self.list[i].getPos() == (int(x+(x-self.Np.getX())*2),int(y+1*2),1),self.list[i].getPos() , (int(x+(x-self.Np.getX())*2),int(y+1*2),1))
-												self.Return = True
-												break
-									if self.Return == True:
-											print('You can not go forward to eat not your figures')
-											#break
-									else:
-											self.Np.setPos(int(x+(x-self.Np.getX())),int(y+1),1)
-											self.pq.getEntry(0).getIntoNodePath().remove()
-											self.list.pop(i)
-											self.player = 0
-											#break
-									self.Return = ''
+													self.l = []
+													self.step = 1
+						
+													
+								elif self.figure == 'blackF' and self.player == 'black' and (self.x,self.y) != (x,y):# если кликнули на чёрную фишку
+											if self.Np.getY() <1:
+												self.Np.setName('kingB')
 
-									self.step = 1
-							elif y > self.y-2 and self.figure == 'blackF' and self.player == 1:
-                            #print('hjkl')
-								for i in range(len(self.list1)):
-									#if self.list1[i].getPos() != (int(x+(x-self.Np.getX())),int(y-1),1):
-										self.Np.setPos(int(x+(x-self.Np.getX())),int(y-1),1)
-										self.pq.getEntry(0).getIntoNodePath().remove()
-										self.list.pop(i)
-										self.player =  0 
-										break
-								self.step = 1
+												tex = loader.loadTexture("figures/black_king.png")
+												self.Np.setTexture(tex, 1) 
+											g=loader.loadModel('models/box')
 
+											g.setScale(1,1,1)
+											g.setPos(int(x+(x-self.Np.getX())),int(y-1),1)
+											g.setName('GGGGGGGG')
+
+
+
+											for i in render.findAllMatches("whiteF"):
+														self.l.append((i.getX(),i.getY()))
+													
+											if str(self.l).find(str((g.getX(),g.getY()))) < 0 and int(g.getY()) != 8 and int(g.getY()) != -1 and  int(g.getX()) != 8 and int(g.getX())!= -1: # если впереди, куда я хожу нет фишки
+												self.Np.setPos(int(x+(x-self.Np.getX())),int(y+(y-self.Np.getY())),1)
+												self.pq.getEntry(0).getIntoNodePath().remove()
+
+												g.remove()
+												#break
+											self.l = []
+											self.step = 1
+
+
+
+
+########################### Eat kings ###########################
+
+					self.text.setText('player - '+self.player)

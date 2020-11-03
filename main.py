@@ -18,7 +18,7 @@ import sys
 
 
 from direct.gui.OnscreenImage import OnscreenImage 
-from numpy import *
+#from numpy import *
 
 
 from player import *            
@@ -40,11 +40,15 @@ class ButtonBar(ShowBase):
         self.camera.setHpr(0,-90,0)
 
         #self.f = Figure()
-        self.accept('mouse3',self.pl.addFigure)
+        if self.set == 1:
+
+        	self.accept('mouse3',self.pl.addFigure)
         self.accept('enter',self.loop)
     def loop(self):
+    	
         self.accept('mouse1',self.pl.movement)
-        self.accept('mouse2',self.pl.eat)
+        self.pl.set = 0
+
 
 
 

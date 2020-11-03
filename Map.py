@@ -10,9 +10,9 @@ def genMap():
 	            mas = []
 	            for j  in range(8):
 	                    if (i+j)%2 == 0:
-	                        num = {'type': 'cell', 'pos':((0.25*i)-0.875, 0, (0.25*j)-0.875), 'scale': (0.125, 0,0.125), 'path': 'black.png','color':'black'}
+	                        num = {'type': 'cell', 'pos':((0.25*i)-0.875, 0, (0.25*j)-0.875), 'scale': (0.125, 0,0.125), 'path': 'figures/black.png','color':'black'}
 	                    else:
-	                        num = {'type': 'cell', 'pos':((0.25*i)-0.875, 0, (0.25*j)-0.875), 'scale': (0.125, 0,0.125), 'path': 'white.png','color':'white'}
+	                        num = {'type': 'cell', 'pos':((0.25*i)-0.875, 0, (0.25*j)-0.875), 'scale': (0.125, 0,0.125), 'path': 'figures/white.png','color':'white'}
 	                    mas.append(num)
 	                    
 	            l.append(mas)
@@ -31,14 +31,14 @@ def showMap():
                     g=loader.loadModel('models/box')
                     g.setName('black')
                     g.setScale(1,1,1)
-                    print(g)
+                    #print(g)
                     #tex = loader.loadTexture(l[j][i].get('path'))
                    # g.setTexture(tex)
                     #g.setPos(i,j,0)
                     #g.setCollideMask(BitMask32.bit(1))
                     #g.reparentTo(render)
                     g.copyTo(pcn1)
-                    tex = loader.loadTexture("black.png")
+                    tex = loader.loadTexture(l[j][i].get('path'))
                     pcn1.setTexture(tex, 1) 
                 if l[j][i].get('color') == 'white':
                     cs = CollisionBox(0.5, 0.5, 0.5, 0.5)
@@ -53,5 +53,5 @@ def showMap():
                     #g.setCollideMask(BitMask32.bit(1))
 
                     g.copyTo(pcn1)
-                    tex = loader.loadTexture("white.png")
+                    tex = loader.loadTexture(l[j][i].get('path'))
                     pcn1.setTexture(tex, 1) 
